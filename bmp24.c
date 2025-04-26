@@ -419,4 +419,3 @@ void bmp24_apply_filter(t_bmp24 * img,float ** kernel, int kernelSize) {
 
 }
 
-
