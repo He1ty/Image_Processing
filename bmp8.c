@@ -14,13 +14,7 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
     // lecture du header de l'image
     fread(bmp8->header, sizeof(unsigned char), 54, file);
 
-    // extraction des info utile, en utilisant les offset qui sont donnés dans le sujet
-    // c est un peu sorcier les lignes en dessous mais :
-    // comme vu dans le sujet les info prennent une certain place ( 4bytes pour width et height, 2 pour color planes)
-    // or le header il stockes les bytes 1 par 1, donc si on lit juste header[18] on loupe 3 octets.
-    // La memoire dans un tableau de unsigned char elle ressemble a ca : [][][][][][]....[] avec chaque case stocké sur un byte
-    // On sait qu'un int est stocké sur 4 bytes, donc on caste la lecture de header[18] en (int*) (pointeur car on manipule de la mémoire)
-    // enfin on mets *(int*) pour avoir la valeur sur laquelle (int*) pointe.
+
     bmp8->width  = *(int*)&bmp8->header[18];
 
     // on pourrait aussi le lire de la sorte, en gros on des opérations bitwise.

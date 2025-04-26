@@ -60,17 +60,17 @@ void free_kernels(float*** kernels, int num_kernels, int kernel_size) {
 
 void bitmap_24_manipulation(float*** kernels) {
 
-    t_bmp24 *nigga = bmp24_loadImage("bmp24.bmp");
+    t_bmp24 *manipulator = bmp24_loadImage("bmp24.bmp");
 
-    bmp24_printInfo(nigga);
+    bmp24_printInfo(manipulator);
 
-    //bmp24_negative(nigga);
-    //bmp24_grayscale(nigga);
-    //bmp24_brightness(nigga, -100);
+    //bmp24_negative(manipulator);
+    //bmp24_grayscale(manipulator);
+    //bmp24_brightness(manipulator, -100);
 
-    bmp24_apply_filter(nigga, kernels[GAUSS], 3);
+    bmp24_apply_filter(manipulator, kernels[GAUSS], 3);
 
-    bmp24_saveImage(nigga, "filtered_24.bmp");
+    bmp24_saveImage(manipulator, "filtered_24.bmp");
 }
 
 void bitmap_8_manipulation(float*** kernels) {
