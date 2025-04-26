@@ -107,4 +107,3 @@ t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int ker
 void bmp24_apply_filter(t_bmp24 * img,float ** kernel, int kernelSize);
 
 #endif //BMP24_H
-
