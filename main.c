@@ -96,7 +96,7 @@ void bitmap_8_manipulation(float*** kernels) {
 int main(void) {
 
 
-
+    printf("hell naw");
     float*** kernels = init_kernels();
     bitmap_24_manipulation(kernels);
 
