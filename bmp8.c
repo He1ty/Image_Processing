@@ -17,29 +17,22 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
 
     bmp8->width  = *(int*)&bmp8->header[18];
 
-    // on pourrait aussi le lire de la sorte, en gros on des opérations bitwise.
-    // premier bytes OU deuxieme bytes shifté 8 fois a gauche OU 3eme bytes shifté a gauche 16 fois OU 4eme bytes shifté a gauche 24 fois. On shift dans ce sens car on est en litle  endian
     int width = bmp8->header[18] | bmp8->header[19] << 8 | bmp8->header[20] << 16 | bmp8->header[21] << 24;
 
     bmp8->height = *(int*)&bmp8->header[22];
     bmp8->colorDepth = *(short*)&bmp8->header[28];
 
-    // si y a plus ou moins de 256 couleurs ( 8bits ), on quitte le jeux
     if (bmp8->colorDepth != 8) {
         printf("error color plane (%d bits)\n", bmp8->colorDepth);
         fclose(file);
         return NULL;
     }
 
-    // Dans le fichier bmp y a une liste de valeur pour chaque pixel, mais c est pas directement une couleur, c est un index.
-    // dans le header on a la colorTable. On retrouve les valeurs RGB du pixel en allant a colorTable[index]
     fread(bmp8->colorTable, sizeof(unsigned char), 1024, file);
 
 
-    // taille de la bitmap
     bmp8->dataSize = bmp8->width * bmp8->height;
 
-    // taille de data sur mesure, f(dataSize)
     bmp8->data = malloc(sizeof(unsigned char) * bmp8->dataSize);
     if (bmp8->data == NULL) {
         printf("error allocating memory\n");
@@ -47,7 +40,6 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
         return NULL;
     }
 
-    // Lecture des pixels
     fread(bmp8->data, sizeof(unsigned char), bmp8->dataSize, file);
 
 
@@ -92,7 +84,6 @@ void bmp8_saveImage(const char * filename, t_bmp8 * img){
 }
 
 void bmp8_free(t_bmp8 * img){
-// j'avoue que la fonction me parait un peu débile, y a presque rien a free
 
   if (img){
 
@@ -132,9 +123,6 @@ void bmp8_printInfo(t_bmp8 *img, bool verbose){
 
 
 void bmp8_negative(t_bmp8 * img){
-//selon la consigne il faut soustraire a 255 la valeur de chaque pixel, mais on se rappelle qu'on a pas la valeur direct des pixels, on a une lookup table
-//La table fait 1024 alors que on est supposé etre sur 8 bits soit 256 couleur nan ? Et ben nan parceque c est 256 pour b, pour g, pour r et pour o, la luminance
-//donc il faut adapter la lecture, c est a dire qu'il faut juste pas toucher à o.
     if(!img){
       printf("error pointer null\n");
       return;
@@ -156,7 +144,6 @@ void bmp8_negative(t_bmp8 * img){
 
 
 void bmp8_brightness(t_bmp8 * img, int value){
-//meme idée que pour negatif
 
     if(!img){
         printf("error pointer null\n");
@@ -182,7 +169,6 @@ void bmp8_brightness(t_bmp8 * img, int value){
 
 
 void bmp8_threshold(t_bmp8 * img, int threshold){
-//meme idée que pour negatif
 
     if(!img){
         printf("error pointer null\n");
@@ -210,9 +196,6 @@ void bmp8_threshold(t_bmp8 * img, int threshold){
 int findBestIndex(t_bmp8 * img){
 
 
-
-
-
 }
 
 void bmp8_applyFilter(t_bmp8 * img, float ** kernel, int kernelSize){
@@ -230,14 +213,12 @@ void bmp8_applyFilter(t_bmp8 * img, float ** kernel, int kernelSize){
         return;
     }
 
-    // Conversion de l'image indexée en image RGB brute
     int* image = (int*)malloc(sizeof(int) * img->dataSize);
     for(int i = 0; i < img->dataSize; i++){
         int index = img->data[i] * 4;
         image[i]= img->colorTable[index];
     }
 
-    // Copie de l'image d'origine
     int* newImage = (int*)malloc(sizeof(int) * img->dataSize);
     for (int i = 0; i < img->dataSize; i++) {
         newImage[i] = image[i];
@@ -246,7 +227,6 @@ void bmp8_applyFilter(t_bmp8 * img, float ** kernel, int kernelSize){
     int sum;
     int offset = (kernelSize - 1) / 2;
 
-    // Application du filtre
     for(int j = 0; j < img->height; j++){
         for(int i = 0; i < img->width; i++){
 
@@ -268,7 +248,6 @@ void bmp8_applyFilter(t_bmp8 * img, float ** kernel, int kernelSize){
             }
 
 
-            // on s'assure que sum est bien dans les limites des stocks disponibles
             sum = sum < 0 ? 0 : (sum > 255 ? 255 : sum);
 
             int index = j * img->width + i;
@@ -277,7 +256,6 @@ void bmp8_applyFilter(t_bmp8 * img, float ** kernel, int kernelSize){
         }
     }
 
-    // Reprojection des couleurs vers la palette
     for(int i = 0; i < img->dataSize; i++){
         img->data[i] = newImage[i];
     }

@@ -64,9 +64,7 @@ void bitmap_24_manipulation(float*** kernels) {
 
     bmp24_printInfo(manipulator);
 
-    //bmp24_negative(manipulator);
-    //bmp24_grayscale(manipulator);
-    //bmp24_brightness(manipulator, -100);
+
 
     bmp24_apply_filter(manipulator, kernels[GAUSS], 3);
 
@@ -79,7 +77,6 @@ void bitmap_8_manipulation(float*** kernels) {
     bmp8 = bmp8_loadImage("test_actual_grayscale.bmp");
     if (bmp8 == NULL) {
         printf("Error loading image\n");
-
     }
 
     bmp8_printInfo(bmp8, 0);
@@ -99,13 +96,9 @@ void bitmap_8_manipulation(float*** kernels) {
 int main(void) {
 
 
-    // pour garder les choses propres je fais un tableau avec les kernels. Pour pas a se faire chier avec quel kernel est a tel indice on utilise le enum
-    // du  début. donc kernels[BLUR] par exemple
+
     float*** kernels = init_kernels();
-
     bitmap_24_manipulation(kernels);
-    //bitmap_8_manipulation(kernels);
-
 
     free_kernels(kernels, 5, 3);
 
