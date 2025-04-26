@@ -60,17 +60,15 @@ void free_kernels(float*** kernels, int num_kernels, int kernel_size) {
 
 void bitmap_24_manipulation(float*** kernels) {
 
-    t_bmp24 *nigga = bmp24_loadImage("bmp24.bmp");
+    t_bmp24 *manipulator = bmp24_loadImage("bmp24.bmp");
 
-    bmp24_printInfo(nigga);
+    bmp24_printInfo(manipulator);
 
-    //bmp24_negative(nigga);
-    //bmp24_grayscale(nigga);
-    //bmp24_brightness(nigga, -100);
 
-    bmp24_apply_filter(nigga, kernels[GAUSS], 3);
 
-    bmp24_saveImage(nigga, "filtered_24.bmp");
+    bmp24_apply_filter(manipulator, kernels[GAUSS], 3);
+
+    bmp24_saveImage(manipulator, "filtered_24.bmp");
 }
 
 void bitmap_8_manipulation(float*** kernels) {
@@ -79,19 +77,11 @@ void bitmap_8_manipulation(float*** kernels) {
     bmp8 = bmp8_loadImage("test_actual_grayscale.bmp");
     if (bmp8 == NULL) {
         printf("Error loading image\n");
-        return 1;
     }
 
     bmp8_printInfo(bmp8, 0);
 
 
-    //bmp8_saveImage("niggward.bmp", bmp8);
-    //bmp8_negative(bmp8);
-    //bmp8_saveImage("inverted_.bmp", bmp8);
-    //bmp8_brightness(bmp8, 100);
-    //bmp8_saveImage("bright.bmp", bmp8);
-    //bmp8_threshold(bmp8, 150);
-    //bmp8_saveImage("threshold_.bmp", bmp8);
 
 
     bmp8_applyFilter(bmp8, kernels[SHARP], 3);
@@ -106,13 +96,9 @@ void bitmap_8_manipulation(float*** kernels) {
 int main(void) {
 
 
-    // pour garder les choses propres je fais un tableau avec les kernels. Pour pas a se faire chier avec quel kernel est a tel indice on utilise le enum
-    // du  début. donc kernels[BLUR] par exemple
+
     float*** kernels = init_kernels();
-
     bitmap_24_manipulation(kernels);
-    //bitmap_8_manipulation(kernels);
-
 
     free_kernels(kernels, 5, 3);
 
