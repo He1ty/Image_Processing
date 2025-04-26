@@ -1,0 +1,9 @@
+# ninja log v6
+5	123	7673702654418529	CMakeFiles/projet_benito.dir/main.c.obj	9d24ca955d039531
+53	406	7673702382764744	CMakeFiles/projet_benito.dir/bmp8.c.obj	ed21786536fb29d3
+12	260	7673690507535914	CMakeFiles/projet_benito.dir/bmp24.c.obj	24c7ee815e343e0b
+124	244	7673702655599484	projet_benito.exe	2c0ce6596399b8dd
+5	165	7673838597160244	CMakeFiles/projet_benito.dir/main.c.obj	fe1d044604b13cd3
+11	185	7673838597214889	CMakeFiles/projet_benito.dir/bmp8.c.obj	cab03fecf03aa693
+18	205	7673838597288017	CMakeFiles/projet_benito.dir/bmp24.c.obj	3bbb7082078742e3
+206	417	7673838599163244	projet_benito.exe	2c0ce6596399b8dd
