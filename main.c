@@ -2,7 +2,7 @@
 #include "bmp24.h"
 
 
-enum {BLUR, GAUSS, OUTLINE, EMBOSS, SHARP};
+enum {BLUR, GAUSS, OUTLINE, EMBOSS, SHARPEN};
 
 
 
@@ -47,6 +47,7 @@ float*** init_kernels() {
 
     return kernels;
 }
+
 void free_kernels(float*** kernels, int num_kernels, int kernel_size) {
     for (int k = 0; k < num_kernels; k++) {
         for (int i = 0; i < kernel_size; i++) {
@@ -57,10 +58,9 @@ void free_kernels(float*** kernels, int num_kernels, int kernel_size) {
     free(kernels);  // Libère le tableau de pointeurs de kernels
 }
 
-
 void bitmap_24_manipulation(float*** kernels) {
 
-    t_bmp24 *manipulator = bmp24_loadImage("bmp24.bmp");
+    t_bmp24 *manipulator = bmp24_loadImage("barbara_gray.bmp");
 
     bmp24_printInfo(manipulator);
 
@@ -74,31 +74,23 @@ void bitmap_24_manipulation(float*** kernels) {
 void bitmap_8_manipulation(float*** kernels) {
 
     t_bmp8* bmp8 = (t_bmp8*)malloc(sizeof(t_bmp8));
-    bmp8 = bmp8_loadImage("test_actual_grayscale.bmp");
+    bmp8 = bmp8_loadImage("..\\barbara_gray.bmp");
     if (bmp8 == NULL) {
         printf("Error loading image\n");
     }
 
     bmp8_printInfo(bmp8, 0);
 
-
-
-
-    bmp8_applyFilter(bmp8, kernels[SHARP], 3);
+    bmp8_applyFilter(bmp8, kernels[SHARPEN], 3);
     bmp8_saveImage("filtered.bmp", bmp8);
 
     bmp8_free(bmp8);
-
 }
-
-
 
 int main(void) {
 
-
-
     float*** kernels = init_kernels();
-    bitmap_24_manipulation(kernels);
+    bitmap_8_manipulation(kernels);
 
     free_kernels(kernels, 5, 3);
 

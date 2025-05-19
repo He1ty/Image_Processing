@@ -17,8 +17,6 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
 
     bmp8->width  = *(int*)&bmp8->header[18];
 
-    int width = bmp8->header[18] | bmp8->header[19] << 8 | bmp8->header[20] << 16 | bmp8->header[21] << 24;
-
     bmp8->height = *(int*)&bmp8->header[22];
     bmp8->colorDepth = *(short*)&bmp8->header[28];
 
@@ -41,9 +39,6 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
     }
 
     fread(bmp8->data, sizeof(unsigned char), bmp8->dataSize, file);
-
-
-
 
     fclose(file);
     return bmp8;
@@ -94,8 +89,6 @@ void bmp8_free(t_bmp8 * img){
   }
   printf( "error pointer null\n");
 
-
-
 }
 
 void bmp8_printInfo(t_bmp8 *img, bool verbose){
@@ -114,34 +107,26 @@ void bmp8_printInfo(t_bmp8 *img, bool verbose){
         printf("rgb(%d, %d, %d) @ %d\n", img->colorTable[index+2], img->colorTable[index+1], img->colorTable[index], index);
       }
     }
-
 }
-
-
-
-
-
 
 void bmp8_negative(t_bmp8 * img){
     if(!img){
       printf("error pointer null\n");
       return;
     }
-    int gray;
+    int inverse;
     int index;
     for (int i = 0; i < 256; i++) {
         index = i*4;
-        gray = 255 - img->colorTable[index];
+        inverse = 255 - img->colorTable[index];
 
 
-        img->colorTable[index] = gray;
-        img->colorTable[index+1] = gray;
-        img->colorTable[index+2] = gray;
+        img->colorTable[index] = inverse;
+        img->colorTable[index+1] = inverse;
+        img->colorTable[index+2] = inverse;
 
     }
 }
-
-
 
 void bmp8_brightness(t_bmp8 * img, int value){
 
@@ -151,22 +136,20 @@ void bmp8_brightness(t_bmp8 * img, int value){
     }
 
 
-    int gray;
+    int mod;
     int index;
     for (int i = 0; i < 256; i++) {
         index = i*4;
-        gray = img->colorTable[index]   + value > 255 ? 255 : img->colorTable[index] + value;// operateur ternaire, chais pas si vous avez vu, en gros c est un if else en une ligne, condition ? si oui : si non
+        mod = img->colorTable[index] + value > 255 ? 255 : img->colorTable[index] + value;
 
-
-        img->colorTable[index] = gray;
-        img->colorTable[index+1] = gray;
-        img->colorTable[index+2] = gray;
+        img->colorTable[index] = mod;
+        img->colorTable[index+1] = mod;
+        img->colorTable[index+2] = mod;
 
     }
 
 
 }
-
 
 void bmp8_threshold(t_bmp8 * img, int threshold){
 
@@ -174,27 +157,18 @@ void bmp8_threshold(t_bmp8 * img, int threshold){
         printf("error pointer null\n");
         return;
     }
-
-
-
-    int gray;
+    int mod;
     int index = 0;
     for (int i = 0; i < 256; i++) {
         index = i*4;
-        gray = img->colorTable[index]   > threshold ? 255 : 0;
+        mod = img->colorTable[index] > threshold ? 255 : 0;
 
 
-        img->colorTable[index] = gray;
-        img->colorTable[index+1] = gray;
-        img->colorTable[index+2] = gray;
+        img->colorTable[index] = mod;
+        img->colorTable[index+1] = mod;
+        img->colorTable[index+2] = mod;
 
     }
-
-}
-
-
-int findBestIndex(t_bmp8 * img){
-
 
 }
 
@@ -208,58 +182,53 @@ void bmp8_applyFilter(t_bmp8 * img, float ** kernel, int kernelSize){
         printf("error kernel null\n");
         return;
     }
-    if(kernelSize % 2 == 0){
+    if (kernelSize % 2 == 0){
         printf("kernel size must be odd\n");
         return;
     }
 
-    int* image = (int*)malloc(sizeof(int) * img->dataSize);
-    for(int i = 0; i < img->dataSize; i++){
-        int index = img->data[i] * 4;
-        image[i]= img->colorTable[index];
+    // Allocate memory for the new image
+    unsigned char* newImage = (unsigned char*)malloc(img->dataSize);
+    if (!newImage) {
+        printf("memory allocation failed\n");
+        return;
     }
 
-    int* newImage = (int*)malloc(sizeof(int) * img->dataSize);
-    for (int i = 0; i < img->dataSize; i++) {
-        newImage[i] = image[i];
-    }
+    int offset = kernelSize / 2;
 
-    int sum;
-    int offset = (kernelSize - 1) / 2;
+    // Apply the filter to each pixel
+    for (int y = 0; y < img->height; y++) {
+        for (int x = 0; x < img->width; x++) {
+            float sum = 0.0f;
 
-    for(int j = 0; j < img->height; j++){
-        for(int i = 0; i < img->width; i++){
+            // Apply kernel to the neighborhood
+            for (int ky = 0; ky < kernelSize; ky++) {
+                for (int kx = 0; kx < kernelSize; kx++) {
+                    // Calculate corresponding image coordinates
+                    int imgX = x + kx - offset;
+                    int imgY = y + ky - offset;
 
-            sum=0;
-
-            for(int k = 0; k < kernelSize; k++){
-                for(int l = 0; l < kernelSize; l++){
-                    int I = i - offset + l;
-                    int J = j - offset + k;
-
-                    if(I < 0 || I >= img->width || J < 0 || J >= img->height)
-                        continue;
-
-                    int index = J * img->width + I;
-
-                    sum += image[index] * kernel[k][l];
-
+                    // Handle border conditions (zero padding)
+                    if (imgX >= 0 && imgX < img->width && imgY >= 0 && imgY < img->height) {
+                        int index = imgY * img->width + imgX;
+                        sum += img->data[index] * kernel[ky][kx];
+                    }
                 }
             }
 
+            // Clamp the result to valid pixel values
+            int result = (int)sum;
+            result = result < 0 ? 0 : (result > 255 ? 255 : result);
 
-            sum = sum < 0 ? 0 : (sum > 255 ? 255 : sum);
-
-            int index = j * img->width + i;
-            newImage[index] = sum;
-
+            // Set the output pixel
+            int index = y * img->width + x;
+            newImage[index] = (unsigned char)result;
         }
     }
 
-    for(int i = 0; i < img->dataSize; i++){
-        img->data[i] = newImage[i];
-    }
+    // Copy the new image back to the original
+    memcpy(img->data, newImage, img->dataSize);
 
-    free(image);
+    // Free the temporary image
     free(newImage);
 }

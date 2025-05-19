@@ -97,8 +97,6 @@ void bmp24_writePixelData (t_bmp24 * image, FILE * file);
 //debug
 void compare_da_images();
 
-
-
 //data processing
 void bmp24_negative (t_bmp24 * img);
 void bmp24_grayscale (t_bmp24 * img);

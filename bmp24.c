@@ -34,9 +34,6 @@ void compare_da_images() {
 
 }
 
-
-
-
 //utils
 t_pixel ** bmp24_allocateDataPixels (int width, int height) {
 
@@ -83,8 +80,6 @@ void bmp24_free (t_bmp24 * img) {
     free(img);
 
 }
-
-
 void file_rawRead (long position, void * buffer, uint32_t size, size_t n, FILE* file) {
     fseek(file, position, SEEK_SET);
     fread(buffer, size, n, file);
