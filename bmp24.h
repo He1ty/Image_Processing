@@ -8,22 +8,11 @@
 // Offsets for the BMP header
 #define BITMAP_MAGIC 0x00 // offset 0
 #define BITMAP_SIZE 0x02 // offset 2
-#define BITMAP_RESERVED1 0x06 // offset 6
-#define BITMAP_RESERVED2 0x08 // offset 8
 #define BITMAP_OFFSET 0x0A // offset 10
 #define BITMAP_WIDTH 0x12 // offset 18
 #define BITMAP_HEIGHT 0x16 // offset 22
 #define BITMAP_DEPTH 0x1C // offset 28
-
-//offsets for the bmp info_header
-#define BITMAP_PLANES 0x1A // offset 26
-#define BITMAP_BITS 0x1C
-#define BITMAP_COMPRESSED 0x1E
 #define BITMAP_SIZE_RAW 0x22 // offset 34
-#define BITMAP_XRES 0x26 // offset 38
-#define BITMAP_YRES 0x2A
-#define BITMAP_N_COLORS 0x2E
-#define BITMAP_IMP_COLORS 0x32
 
 // Magical number for BMP files
 #define BMP_TYPE 0x4D42 // 'BM' in hexadecimal
@@ -33,18 +22,11 @@
 // Constant for the color depth
 #define DEFAULT_DEPTH 0x18 // 24
 
-
-
-
-
 typedef struct {
     int red;
     int green;
     int blue;
 }t_pixel;
-
-
-
 
 typedef struct {
     uint16_t type;
@@ -53,6 +35,7 @@ typedef struct {
     uint16_t reserved2;
     uint32_t offset;
 } t_bmp_header;
+
 typedef struct {
     uint32_t size;  // size du header_info
     int32_t width;
@@ -66,7 +49,6 @@ typedef struct {
     uint32_t ncolors;
     uint32_t importantcolors;
 } t_bmp_info;
-
 
 typedef struct {
     t_bmp_header header;

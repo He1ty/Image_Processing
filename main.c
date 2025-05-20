@@ -60,15 +60,13 @@ void free_kernels(float*** kernels, int num_kernels, int kernel_size) {
 
 void bitmap_24_manipulation(float*** kernels) {
 
-    t_bmp24 *manipulator = bmp24_loadImage("barbara_gray.bmp");
+    t_bmp24 *manipulator = bmp24_loadImage("..\\flowers_color.bmp");
 
     bmp24_printInfo(manipulator);
 
+    //bmp24_apply_filter(manipulator, kernels[GAUSS], 3);
 
-
-    bmp24_apply_filter(manipulator, kernels[GAUSS], 3);
-
-    bmp24_saveImage(manipulator, "filtered_24.bmp");
+    bmp24_saveImage(manipulator, "..\\filtered_24.bmp");
 }
 
 void bitmap_8_manipulation(float*** kernels) {
@@ -82,7 +80,7 @@ void bitmap_8_manipulation(float*** kernels) {
     bmp8_printInfo(bmp8, 0);
 
     bmp8_applyFilter(bmp8, kernels[SHARPEN], 3);
-    bmp8_saveImage("filtered.bmp", bmp8);
+    bmp8_saveImage("..\\filtered.bmp", bmp8);
 
     bmp8_free(bmp8);
 }
@@ -90,7 +88,7 @@ void bitmap_8_manipulation(float*** kernels) {
 int main(void) {
 
     float*** kernels = init_kernels();
-    bitmap_8_manipulation(kernels);
+    bitmap_24_manipulation(kernels);
 
     free_kernels(kernels, 5, 3);
 
