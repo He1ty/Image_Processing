@@ -60,7 +60,7 @@ void free_kernels(float*** kernels, int num_kernels, int kernel_size) {
 
 void bitmap_24_manipulation(float*** kernels) {
 
-    t_bmp24 *manipulator = bmp24_loadImage("..\\flowers_color.bmp");
+    t_bmp24 *manipulator = bmp24_loadImage("..\\lena_color.bmp");
 
     bmp24_printInfo(manipulator);
 

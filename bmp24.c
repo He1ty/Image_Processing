@@ -93,7 +93,8 @@ void file_rawWrite (long position, void * buffer, uint32_t size, size_t n, FILE*
 }
 void bmp24_readPixelValue (t_bmp24 * image, int x, int y, FILE * file)
 {
-    long position = image->header.offset + (image->height - 1 - y) * image->width + x * 3;
+    int rowSize = ((image->width * 3 + 3)/4)*4;
+    uint32_t position = image->header.offset + (image->height - 1 - y) * rowSize + x * 3;
 
     uint8_t pixelData[3];
     file_rawRead(position, pixelData, sizeof(uint8_t), 3, file);
@@ -109,8 +110,10 @@ void bmp24_readPixelData (t_bmp24 * image, FILE * file) {
         }
     }
 }
+
 void bmp24_writePixelValue (t_bmp24 * image, int x, int y, FILE * file) {
-    long position = image->header.offset + (image->height - 1 - y) * image->width + x * 3;
+    int rowSize = ((image->width * 3 + 3)/4)*4;
+    uint32_t position = image->header.offset + (image->height - 1 - y) * rowSize + x * 3;
 
     uint8_t pixelData[3];
 
@@ -168,6 +171,7 @@ t_bmp24 * bmp24_loadImage (const char * filename) {
 
     return img;
 }
+
 void bmp24_saveImage (t_bmp24 * image, const char * filename) {
     FILE * file = fopen(filename, "wb");
     if (!file) {
@@ -175,10 +179,10 @@ void bmp24_saveImage (t_bmp24 * image, const char * filename) {
         return;
     }
 
-    file_rawWrite(0, &image->header.type, sizeof(uint16_t), 1, file);
+    file_rawWrite(BITMAP_MAGIC, &image->header.type, sizeof(uint16_t), 1, file);
     file_rawWrite(BITMAP_SIZE, &image->header.size, sizeof(uint32_t), 1, file);
     file_rawWrite(BITMAP_OFFSET, &image->header.offset, sizeof(uint32_t), 1, file);
-    file_rawWrite(HEADER_SIZE, &image->header_info, sizeof(t_bmp_info), 1, file);
+    file_rawWrite(HEADER_SIZE, &(image->header_info), sizeof(t_bmp_info), 1, file);
 
     bmp24_writePixelData(image, file);
     fclose(file);
