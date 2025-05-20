@@ -81,8 +81,8 @@ void bitmap_8_manipulation(float*** kernels) {
 
     bmp8_printInfo(bmp8, 0);
 
-    bmp8_applyFilter(bmp8, kernels[SHARPEN], 3);
-    bmp8_saveImage("filtered.bmp", bmp8);
+    bmp8_applyFilter(bmp8, kernels[EMBOSS], 3);
+    bmp8_saveImage("..\\filtered.bmp", bmp8);
 
     bmp8_free(bmp8);
 }

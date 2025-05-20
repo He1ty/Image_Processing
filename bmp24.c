@@ -1,7 +1,6 @@
 #include "bmp24.h"
 
 
-//debugging
 void compare_da_images() {
 
     unsigned char original_buffer[54];
@@ -29,9 +28,6 @@ void compare_da_images() {
             printf("difference spotted @ i:%d", i);
         }
     }
-
-
-
 }
 
 //utils
