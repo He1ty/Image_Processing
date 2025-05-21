@@ -247,31 +247,31 @@ unsigned int * bmp8_computeHistogram(t_bmp8 * img) {
 }
 
 unsigned int * bmp8_computeCDF(unsigned int * hist) {
-    unsigned int * ctf = calloc(256, sizeof(unsigned int));
-    int ctfMin = 0;
+    unsigned int * cdf = calloc(256, sizeof(unsigned int));
+    int cdfMin = 0;
     int N = 0;
     for (int i=0; i < 256; i++) {
         for (int j=0; j<i+1; j++) {
-            ctf[i] += (int)hist[j];
+            cdf[i] += (int)hist[j];
         }
-        if (ctf[i] > 0) {
-            ctfMin = (int)ctf[i];
-            N = (int)ctf[i];
+        if (cdf[i] > 0) {
+            cdfMin = (int)cdf[i];
+            N = (int)cdf[i];
         }
     }
 
     for (int i=0; i < 256; i++) {
-        if (ctf[i] < ctfMin && ctf[i] > 0) {
-            ctfMin = (int)ctf[i];
+        if (cdf[i] < cdfMin && cdf[i] > 0) {
+            cdfMin = (int)cdf[i];
         }
     }
     for (int i=0; i < 256; i++) {
-        ctf[i] = (float)(ctf[i]-ctfMin)/(N-ctfMin)*255;
-        ctf[i] = ((float)ctf[i] > (float)((int)ctf[i]+1)/2 ? (int)ctf[i]+1 : (int)ctf[i]);
-        printf("ctf[%d] = %d\n", i, ctf[i]);
+        cdf[i] = (float)(cdf[i]-cdfMin)/(N-cdfMin)*255;
+        cdf[i] = ((float)cdf[i] > (float)((int)cdf[i]+1)/2 ? (int)cdf[i]+1 : (int)cdf[i]);
+        //printf("cdf[%d] = %d\n", i, cdf[i]);
     }
 
-    return ctf;
+    return cdf;
 }
 
 void bmp8_equalize(t_bmp8 * img, unsigned int * hist_eq) {

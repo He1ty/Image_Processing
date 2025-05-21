@@ -29,6 +29,12 @@ typedef struct {
 }t_pixel;
 
 typedef struct {
+    int Y;
+    int U;
+    int V;
+}t_yuv;
+
+typedef struct {
     uint16_t type;
     uint32_t size;    // size du fichier
     uint16_t reserved1;
@@ -85,5 +91,9 @@ void bmp24_grayscale (t_bmp24 * img);
 void bmp24_brightness (t_bmp24 * img, int value);
 t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int kernelSize);
 void bmp24_apply_filter(t_bmp24 * img,float ** kernel, int kernelSize);
+unsigned int * bmp24_computeHistogram(t_bmp24 * img);
+unsigned int * bmp24_computeCDF(unsigned int * hist);
+void bmp24_equalize(t_bmp24 * img);
+
 
 #endif //BMP24_H

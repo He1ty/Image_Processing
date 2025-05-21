@@ -1,43 +1,8 @@
 #include "bmp24.h"
-
+#include <math.h>
 #include "bmp8.h"
 
 
-/*debugging
-void compare_da_images() {
-
-    unsigned char original_buffer[54];
-    unsigned char saved_buffer[54];
-
-    FILE* file = fopen("bmp24.bmp", "rb");
-    if (file == NULL) {
-        printf("Error opening file\n");
-        return;
-    }
-    fread(original_buffer, sizeof(unsigned char), 54, file);
-    fclose(file);
-
-    file = fopen("test_save_24.bmp", "rb");
-    if (file == NULL) {
-        printf("Error opening file\n");
-        return;
-    }
-    fread(saved_buffer, sizeof(unsigned char), 54, file);
-    fclose(file);
-
-
-    for (int i = 0; i < 54; i++) {
-        if (original_buffer[i] != saved_buffer[i]) {
-            printf("difference spotted @ i:%d", i);
-        }
-    }
-
-
-
-}
-*/
-
-//utils
 t_pixel ** bmp24_allocateDataPixels (int width, int height) {
 
     t_pixel ** pixels = (t_pixel**) malloc(height * sizeof(t_pixel*));
@@ -317,6 +282,76 @@ void bmp24_apply_filter(t_bmp24 * img,float ** kernel, int kernelSize) {
             img->data[y][x] = bmp24_convolution(copy, x, y, kernel, kernelSize);
         }
     }
+}
+
+unsigned int * bmp24_computeHistogram(t_bmp24 * img) {
+    unsigned int * histogram = calloc(256, sizeof(unsigned int));
+    for (int c=0; c < 256; c++) {
+        for (int y=0; y < img->height; y++) {
+            for (int x=0; x < img->width; x++) {
+            float Y = 0.299*img->data[y][x].red + 0.587*img->data[y][x].green + 0.114*img->data[y][x].blue;
+            Y = (int)Y>255? 255 : Y;
+                if ((int)round(Y) == c) {
+                    histogram[c]++;
+                }
+            }
+        }
+    }
+    //for (int c=0; c < 256; c++) printf("histogram[%d]: %d\n",c ,histogram[c]);
+    return histogram;
+}
+
+unsigned int * bmp24_computeCDF(unsigned int * hist) {
+    unsigned int * cdf = calloc(256, sizeof(unsigned int));
+    int cdfMin = 0;
+    int N = 0;
+    for (int i=0; i < 256; i++) {
+        for (int j=0; j<i+1; j++) {
+            cdf[i] += (int)hist[j];
+        }
+        if (cdf[i] > 0) {
+            cdfMin = (int)cdf[i];
+            N = (int)cdf[i];
+        }
+    }
+
+    for (int i=0; i < 256; i++) {
+        if (cdf[i] < cdfMin && cdf[i] > 0) {
+            cdfMin = (int)cdf[i];
+        }
+    }
+    for (int i=0; i < 256; i++) {
+        cdf[i] = (float)(cdf[i]-cdfMin)/(N-cdfMin)*255;
+        cdf[i] = ((float)cdf[i] > (float)((int)cdf[i]+1)/2 ? (int)cdf[i]+1 : (int)cdf[i]);
+        //printf("cdf[%d] = %d\n", i, cdf[i]);
+    }
+
+    return cdf;
+}
+
+void bmp24_equalize(t_bmp24 * img) {
+    unsigned int * hist = bmp24_computeHistogram(img);
+    unsigned int * hist_eq = bmp24_computeCDF(hist);
+    for (int y = 0; y < img->height; y++) {
+        for (int x = 0; x < img->width; x++) {
+            float U = -0.14713*img->data[y][x].red - 0.28886*img->data[y][x].green + 0.436*img->data[y][x].blue;
+            float V = 0.615*img->data[y][x].red - 0.51499*img->data[y][x].green - 0.10001*img->data[y][x].blue;
+            float Y = 0.299*img->data[y][x].red + 0.587*img->data[y][x].green + 0.114*img->data[y][x].blue;
+            int new_Y = (int)round(Y);
+            new_Y = (new_Y > 255) ? 255 : new_Y;
+            img->data[y][x].red = round(hist_eq[new_Y] + 1.13983*V);
+            img->data[y][x].red = (img->data[y][x].red > 255)? 255: img->data[y][x].red < 0 ? 0 : img->data[y][x].red;
+            img->data[y][x].green = round(hist_eq[new_Y] - 0.39465*U - 0.58060*V);
+            img->data[y][x].green = (img->data[y][x].green > 255)? 255: img->data[y][x].green < 0 ? 0 : img->data[y][x].green;
+            img->data[y][x].blue = round(hist_eq[new_Y] + 2.03211*U);
+            img->data[y][x].blue = (img->data[y][x].blue > 255)? 255: img->data[y][x].blue < 0 ? 0 : img->data[y][x].blue;
+
+
+
+        }
+    }
+    free(hist);
+    free(hist_eq);
 }
 
 

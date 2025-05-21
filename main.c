@@ -64,7 +64,9 @@ void bitmap_24_manipulation(float*** kernels) {
 
     bmp24_printInfo(manipulator);
 
-    bmp24_apply_filter(manipulator, kernels[OUTLINE], 3);
+    bmp24_equalize(manipulator);
+
+    //bmp24_apply_filter(manipulator, kernels[OUTLINE], 3);
 
     bmp24_saveImage(manipulator, "..\\filtered_24.bmp");
 }
@@ -91,7 +93,7 @@ void bitmap_8_manipulation(float*** kernels) {
 int main(void) {
 
     float*** kernels = init_kernels();
-    bitmap_8_manipulation(kernels);
+    bitmap_24_manipulation(kernels);
 
     free_kernels(kernels, 5, 3);
 
