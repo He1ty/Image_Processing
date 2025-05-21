@@ -1,6 +1,6 @@
 # Image Processing in C
 
-## 📌 Project Overview
+##  Project Overview
 
 Efrei Paris P1 int-3 C semester project
 
