@@ -78,8 +78,11 @@ void bitmap_8_manipulation(float*** kernels) {
     }
 
     bmp8_printInfo(bmp8, 0);
+    unsigned int * hist_bmp8 = bmp8_computeHistogram(bmp8);
+    unsigned int * hist_eq_bmp8 = bmp8_computeCDF(hist_bmp8);
+    bmp8_equalize(bmp8, hist_eq_bmp8);
 
-    bmp8_applyFilter(bmp8, kernels[SHARPEN], 3);
+    //bmp8_applyFilter(bmp8, kernels[SHARPEN], 3);
     bmp8_saveImage("..\\filtered.bmp", bmp8);
 
     bmp8_free(bmp8);
@@ -88,7 +91,7 @@ void bitmap_8_manipulation(float*** kernels) {
 int main(void) {
 
     float*** kernels = init_kernels();
-    bitmap_24_manipulation(kernels);
+    bitmap_8_manipulation(kernels);
 
     free_kernels(kernels, 5, 3);
 

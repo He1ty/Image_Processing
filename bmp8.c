@@ -232,3 +232,52 @@ void bmp8_applyFilter(t_bmp8 * img, float ** kernel, int kernelSize){
     // Free the temporary image
     free(newImage);
 }
+
+unsigned int * bmp8_computeHistogram(t_bmp8 * img) {
+    unsigned int * histogram = calloc(256, sizeof(unsigned int));
+    for (int c=0; c < 256; c++) {
+        for (int i=0; i < img->width*img->height; i++) {
+            if (img->data[i] == c) {
+                histogram[c]++;
+            }
+        }
+    }
+    //for (int c=0; c < 256; c++) printf("histogram[%d]: %d\n",c ,histogram[c]);
+    return histogram;
+}
+
+unsigned int * bmp8_computeCDF(unsigned int * hist) {
+    unsigned int * ctf = calloc(256, sizeof(unsigned int));
+    int ctfMin = 0;
+    int N = 0;
+    for (int i=0; i < 256; i++) {
+        for (int j=0; j<i+1; j++) {
+            ctf[i] += (int)hist[j];
+        }
+        if (ctf[i] > 0) {
+            ctfMin = (int)ctf[i];
+            N = (int)ctf[i];
+        }
+    }
+
+    for (int i=0; i < 256; i++) {
+        if (ctf[i] < ctfMin && ctf[i] > 0) {
+            ctfMin = (int)ctf[i];
+        }
+    }
+    for (int i=0; i < 256; i++) {
+        ctf[i] = (float)(ctf[i]-ctfMin)/(N-ctfMin)*255;
+        ctf[i] = ((float)ctf[i] > (float)((int)ctf[i]+1)/2 ? (int)ctf[i]+1 : (int)ctf[i]);
+        printf("ctf[%d] = %d\n", i, ctf[i]);
+    }
+
+    return ctf;
+}
+
+void bmp8_equalize(t_bmp8 * img, unsigned int * hist_eq) {
+    for (int i=0; i < img->dataSize; i++) {
+        img->data[i] = hist_eq[img->data[i]];
+    }
+}
+
+
