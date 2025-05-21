@@ -199,4 +199,128 @@ void bmp24_printInfo(t_bmp24 *img){
     printf("size = %d\n", img->header.size);
     printf("offset = %d\n", img->header.offset);
 }
+void bmp24_negative (t_bmp24 * img) {
+    if(!img){
+        printf("error pointer null\n");
+        return;
+    }
+    for (int y=0; y<img->height; y++) {
+        for (int x=0; x<img->width; x++) {
+
+            img->data[y][x].blue = 255 - img->data[y][x].blue;
+            img->data[y][x].green = 255 - img->data[y][x].green;
+            img->data[y][x].red = 255 - img->data[y][x].red;
+        }
+    }
+
+}
+void bmp24_grayscale (t_bmp24 * img) {
+    if(!img){
+        printf("error pointer null\n");
+        return;
+    }
+    for (int y=0; y<img->height; y++) {
+        for (int x=0; x<img->width; x++) {
+            int avg = (img->data[y][x].blue + img->data[y][x].green + img->data[y][x].red)/3;
+
+            img->data[y][x].blue = avg;
+            img->data[y][x].green = avg;
+            img->data[y][x].red = avg;
+        }
+    }
+
+}
+void bmp24_brightness (t_bmp24 * img, int value) {
+    if(!img){
+        printf("error pointer null\n");
+        return;
+    }
+    for (int y=0; y<img->height; y++) {
+        for (int x=0; x<img->width; x++) {
+
+            img->data[y][x].blue += (img->data[y][x].blue + value > 255)? 255 - img->data[y][x].blue : value;
+            img->data[y][x].green += (img->data[y][x].green + value > 255)? 255 - img->data[y][x].green : value;
+            img->data[y][x].red += (img->data[y][x].red + value > 255)? 255 - img->data[y][x].red : value;
+        }
+    }
+}
+t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int kernelSize) {
+    if(!img){
+        printf("error pointer null\n");
+        return;
+    }
+    if(!kernel){
+        printf("error kernel null\n");
+        return;
+    }
+    if (kernelSize % 2 == 0){
+        printf("kernel size must be odd\n");
+        return;
+    }
+    // Allocate memory for the new image
+    t_pixel newPixel;
+    if (!&newPixel) {
+        printf("memory allocation failed\n");
+        return;
+    }
+    int offset = kernelSize / 2;
+    int sum_b = 0;
+    int sum_g = 0;
+    int sum_r = 0;
+
+    // Apply kernel to the neighborhood
+    for (int ky = 0; ky < kernelSize; ky++) {
+        for (int kx = 0; kx < kernelSize; kx++) {
+            // Calculate corresponding image coordinates
+            int imgX = x + kx - offset;
+            int imgY = y + ky - offset;
+
+            // Handle border conditions (zero padding)
+            if (imgX >= 0 && imgX < img->width && imgY >= 0 && imgY < img->height) {
+                sum_b += img->data[imgY][imgX].blue * kernel[ky][kx];
+                sum_g += img->data[imgY][imgX].green * kernel[ky][kx];
+                sum_r += img->data[imgY][imgX].red * kernel[ky][kx];
+
+            }
+        }
+    }
+
+    //printf("oldPixel: b:%d g:%d r:%d\n", img->data[y][x].blue, img->data[y][x].green, img->data[y][x].red);
+    //printf("newPixel: b:%d g:%d r:%d\n", newPixel.blue, newPixel.green, newPixel.red);
+    sum_b = (sum_b > 255)? 255 : (sum_b < 0? 0 : sum_b);
+    sum_g = (sum_g > 255)? 255 : (sum_g < 0? 0 : sum_g);
+    sum_r = (sum_r > 255)? 255 : (sum_r < 0? 0 : sum_r);
+    // Clamp the result to valid pixel values
+    newPixel.blue = sum_b;
+    newPixel.green = sum_g;
+    newPixel.red = sum_r;
+
+    return newPixel;
+}
+void bmp24_apply_filter(t_bmp24 * img,float ** kernel, int kernelSize) {
+
+    t_bmp24 * copy = (t_bmp24 *)malloc(sizeof(t_bmp24));
+    copy->data = (t_pixel**)malloc(sizeof(t_pixel*) * img->height);
+    for (int y = 0; y < img->height; y++) {
+        copy->data[y] = (t_pixel*)malloc(sizeof(t_pixel) * img->width);
+        for (int x = 0; x < img->width; x++) {
+            copy->data[y][x].blue = img->data[y][x].blue;
+            copy->data[y][x].green = img->data[y][x].green;
+            copy->data[y][x].red = img->data[y][x].red;
+        }
+    }
+    copy->height = img->height;
+    copy->width = img->width;
+
+    for (int y=0; y<img->height; y++) {
+        for (int x=0; x<img->width; x++) {
+            img->data[y][x] = bmp24_convolution(copy, x, y, kernel, kernelSize);
+        }
+    }
+}
+
+
+
+
+
 
