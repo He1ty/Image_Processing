@@ -262,7 +262,7 @@ t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int ker
 
     return newPixel;
 }
-void bmp24_apply_filter(t_bmp24 * img,float ** kernel, int kernelSize) {
+void bmp24_applyFilter(t_bmp24 * img,float ** kernel, int kernelSize) {
 
     t_bmp24 * copy = (t_bmp24 *)malloc(sizeof(t_bmp24));
     copy->data = (t_pixel**)malloc(sizeof(t_pixel*) * img->height);
