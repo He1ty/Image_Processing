@@ -1,3 +1,14 @@
+/*
+**===============================================================
+**  File        : bmp24.h
+**  Author      : Giannini Loic and Benoit Tailhades
+**  Created on  : 04/2025
+**  Description : This file contains the declaration of all funcctions used in the bmp24.c file
+**
+**===============================================================
+*/
+
+
 #ifndef BMP24_H
 #define BMP24_H
 
@@ -21,6 +32,9 @@
 #define INFO_SIZE 0x28 // 40 octets
 // Constant for the color depth
 #define DEFAULT_DEPTH 0x18 // 24
+
+
+
 
 typedef struct {
     int red;

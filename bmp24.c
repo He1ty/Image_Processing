@@ -1,3 +1,13 @@
+/*
+**===============================================================
+**  File        : bmp24.c
+**  Author      : Giannini Loic and Benoît Tailhades
+**  Created on  : 04/2025
+**  Description : This file contains all the definitions of functions that aim to manage the filters and processing of colored images
+**
+**===============================================================
+*/
+
 #include "bmp24.h"
 #include <math.h>
 #include "bmp8.h"
