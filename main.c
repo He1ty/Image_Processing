@@ -58,18 +58,7 @@ void free_kernels(float*** kernels, int num_kernels, int kernel_size) {
     free(kernels);  // Libère le tableau de pointeurs de kernels
 }
 
-void bitmap_24_manipulation(float*** kernels) {
 
-    t_bmp24 *manipulator = bmp24_loadImage("..\\flowers_color.bmp");
-
-    bmp24_printInfo(manipulator);
-
-    bmp24_equalize(manipulator);
-
-    //bmp24_apply_filter(manipulator, kernels[OUTLINE], 3);
-
-    bmp24_saveImage(manipulator, "..\\filtered_24.bmp");
-}
 
 void bitmap_8_manipulation(float*** kernels) {
 
@@ -80,23 +69,151 @@ void bitmap_8_manipulation(float*** kernels) {
     }
 
     bmp8_printInfo(bmp8, 0);
-    unsigned int * hist_bmp8 = bmp8_computeHistogram(bmp8);
-    unsigned int * hist_eq_bmp8 = bmp8_computeCDF(hist_bmp8);
-    bmp8_equalize(bmp8, hist_eq_bmp8);
 
-    //bmp8_applyFilter(bmp8, kernels[SHARPEN], 3);
-    bmp8_saveImage("..\\filtered.bmp", bmp8);
+    bmp8_applyFilter(bmp8, kernels[EMBOSS], 3);
+    bmp8_saveImage("..\\filtered_8.bmp", bmp8);
 
     bmp8_free(bmp8);
 }
 
+void bitmap_24_manipulation(float*** kernels, int filter_type) {
+
+    t_bmp24 *manipulator = bmp24_loadImage("..\\flowers_color.bmp");
+
+    bmp24_printInfo(manipulator);
+
+    bmp24_apply_filter(manipulator, kernels[filter_type], 3);
+
+    bmp24_saveImage(manipulator, "..\\filtered_24.bmp");
+}
+
 int main(void) {
-
     float*** kernels = init_kernels();
-    bitmap_24_manipulation(kernels);
+    char name[256] = {0};
+    int choice = 0;
+    int filter_type = 0;
+    t_bmp8* img8 = NULL;
+    t_bmp24* img24 = NULL;
 
+    printf("HELLLLLLLLLLLLLLLLLLOOOOOOO !!!!!!");
+    printf("\n You are the person that want to know everything about images??");
+    printf("\n You are at the right place!!");
+
+    printf("\nPlease enter the name of the image you are interested in  (format => ..\\\\image_name.bmp):\n ");
+
+    if (fgets(name, sizeof(name), stdin) == NULL) {
+        printf("Error while reading file \n");
+        free_kernels(kernels, 5, 3);
+        return 1;
+    }
+
+
+    size_t len = strlen(name);
+    if (len > 0 && name[len-1] == '\n') {
+        name[len-1] = '\0';
+    }
+
+    img8 = bmp8_loadImage(name);
+
+    if (img8 == NULL) {
+        printf("Impossible to load in grayscale, trying colored image ...\n");
+        img24 = bmp24_loadImage(name);
+
+        if (img24 == NULL) {
+            printf("Impossible cheh %s\n", name);
+            free_kernels(kernels, 5, 3);
+            return 1;
+        }
+
+        printf("Youre image is in color here is what you can do:\n");
+        printf("1: Print basic informations about the image\n");
+        printf("2: Apply filters\n");
+        printf("3: Une petite blague\n");
+        printf("Enter your choice(1-3): ");
+
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input\n");
+            bmp24_free(img24);
+            free_kernels(kernels, 5, 3);
+            return 1;
+        }
+
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+
+        switch (choice) {
+            case 1:
+                bmp24_printInfo(img24);
+                break;
+            case 2:
+                printf("Choose a filter (0=BLUR, 1=GAUSS, 2=OUTLINE, 3=EMBOSS, 4=SHARPEN): ");
+                if (scanf("%d", &filter_type) != 1) {
+                    printf("You entered an invalid input.Switching to BLUR\n");
+                    filter_type = BLUR;
+                } else if (filter_type < 0 || filter_type > 4) {
+                    printf("You entered an invalid input. Switching to blur \n");
+                    filter_type = BLUR;
+                }
+
+                bmp24_apply_filter(img24, kernels[filter_type], 3);
+                bmp24_saveImage(img24, "../filtered_24.bmp");
+                printf("Filtered image here \"../filtered_24.bmp\"\n");
+                break;
+            case 3:
+                printf("Pourquoi les images ne mentent-elles* jamais? Parce qu'elles sont toujours développées!\n");
+                break;
+            default:
+                printf("Invalid choice bot\n");
+        }
+
+        bmp24_free(img24);
+    } else {
+        printf("Youre image is in grayscale here is what you can do::\n");
+        printf("1: Print basic informations about the image\n");
+        printf("2: Apply filters\n");
+        printf("3: A little gimmick \n");
+        printf("Enter your choice  (1-3): ");
+
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input \n");
+            bmp8_free(img8);
+            free_kernels(kernels, 5, 3);
+            return 1;
+        }
+
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+
+        switch (choice) {
+            case 1:
+                bmp8_printInfo(img8, 0);
+                break;
+            case 2:
+                printf("Choose a filter  (0=BLUR, 1=GAUSS, 2=OUTLINE, 3=EMBOSS, 4=SHARPEN): ");
+                if (scanf("%d", &filter_type) != 1) {
+                    printf("You entered an invalid input.Switching to BLUR\n");
+                    filter_type = BLUR;
+                } else if (filter_type < 0 || filter_type > 4) {
+                    printf("You entered an invalid input.Switching to BLUR\n");
+                    filter_type = BLUR;
+                }
+
+                bmp8_applyFilter(img8, kernels[filter_type], 3);
+                bmp8_saveImage("../filtered_8.bmp", img8);
+                printf("Image succesfully accesible at  \"../filtered_8.bmp\"\n");
+                break;
+            case 3:
+                printf("Pourquoi les images ne mentent-elles jamais? Parce qu'elles sont toujours développées!\n");
+                break;
+            default:
+                printf("Invalid choice\n");
+        }
+
+        bmp8_free(img8);
+    }
+
+    // Libération de la mémoire
     free_kernels(kernels, 5, 3);
-
 
     return 0;
 }

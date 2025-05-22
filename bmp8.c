@@ -279,5 +279,3 @@ void bmp8_equalize(t_bmp8 * img, unsigned int * hist_eq) {
         img->data[i] = hist_eq[img->data[i]];
     }
 }
-
-

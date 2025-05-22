@@ -29,12 +29,6 @@ typedef struct {
 }t_pixel;
 
 typedef struct {
-    int Y;
-    int U;
-    int V;
-}t_yuv;
-
-typedef struct {
     uint16_t type;
     uint32_t size;    // size du fichier
     uint16_t reserved1;
