@@ -296,15 +296,12 @@ void bmp24_applyFilter(t_bmp24 * img,float ** kernel, int kernelSize) {
 
 unsigned int * bmp24_computeHistogram(t_bmp24 * img) {
     unsigned int * histogram = calloc(256, sizeof(unsigned int));
-    for (int c=0; c < 256; c++) {
-        for (int y=0; y < img->height; y++) {
-            for (int x=0; x < img->width; x++) {
+    for (int y=0; y < img->height; y++) {
+        for (int x=0; x < img->width; x++) {
             float Y = 0.299*img->data[y][x].red + 0.587*img->data[y][x].green + 0.114*img->data[y][x].blue;
             Y = (int)Y>255? 255 : Y;
-                if ((int)round(Y) == c) {
-                    histogram[c]++;
-                }
-            }
+            histogram[(int)round(Y)]++;
+
         }
     }
     //for (int c=0; c < 256; c++) printf("histogram[%d]: %d\n",c ,histogram[c]);
@@ -313,18 +310,14 @@ unsigned int * bmp24_computeHistogram(t_bmp24 * img) {
 
 unsigned int * bmp24_computeCDF(unsigned int * hist) {
     unsigned int * cdf = calloc(256, sizeof(unsigned int));
-    int cdfMin = 0;
-    int N = 0;
     for (int i=0; i < 256; i++) {
         for (int j=0; j<i+1; j++) {
             cdf[i] += (int)hist[j];
         }
-        if (cdf[i] > 0) {
-            cdfMin = (int)cdf[i];
-            N = (int)cdf[i];
-        }
     }
 
+    int N = (int)cdf[255];
+    int cdfMin = N;
     for (int i=0; i < 256; i++) {
         if (cdf[i] < cdfMin && cdf[i] > 0) {
             cdfMin = (int)cdf[i];
@@ -355,8 +348,6 @@ void bmp24_equalize(t_bmp24 * img) {
             img->data[y][x].green = (img->data[y][x].green > 255)? 255: img->data[y][x].green < 0 ? 0 : img->data[y][x].green;
             img->data[y][x].blue = round(hist_eq[new_Y] + 2.03211*U);
             img->data[y][x].blue = (img->data[y][x].blue > 255)? 255: img->data[y][x].blue < 0 ? 0 : img->data[y][x].blue;
-
-
 
         }
     }

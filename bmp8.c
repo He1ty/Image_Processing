@@ -9,6 +9,7 @@
 */
 #include "bmp8.h"
 #include "bmp24.h"
+#include <math.h>
 
 
 t_bmp8 * bmp8_loadImage(const char * filename) {
@@ -18,7 +19,6 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
         printf( "error opening file %s\n", filename);
         return NULL;
     }
-
     t_bmp8* bmp8 = (t_bmp8*)malloc(sizeof(t_bmp8));
 
     // lecture du header de l'image
@@ -245,13 +245,10 @@ void bmp8_applyFilter(t_bmp8 * img, float ** kernel, int kernelSize){
 
 unsigned int * bmp8_computeHistogram(t_bmp8 * img) {
     unsigned int * histogram = calloc(256, sizeof(unsigned int));
-    for (int c=0; c < 256; c++) {
-        for (int i=0; i < img->width*img->height; i++) {
-            if (img->data[i] == c) {
-                histogram[c]++;
-            }
-        }
+    for (int i=0; i < img->width*img->height; i++) {
+        histogram[img->data[i]]++;
     }
+
     //for (int c=0; c < 256; c++) printf("histogram[%d]: %d\n",c ,histogram[c]);
     return histogram;
 }
@@ -276,11 +273,10 @@ unsigned int * bmp8_computeCDF(unsigned int * hist) {
         }
     }
     for (int i=0; i < 256; i++) {
-        cdf[i] = (float)(cdf[i]-cdfMin)/(N-cdfMin)*255;
-        cdf[i] = ((float)cdf[i] > (float)((int)cdf[i]+1)/2 ? (int)cdf[i]+1 : (int)cdf[i]);
+        cdf[i] = (int)round((float)(cdf[i]-cdfMin)/(N-cdfMin)*255);
         //printf("cdf[%d] = %d\n", i, cdf[i]);
     }
-
+    free(hist);
     return cdf;
 }
 
@@ -288,4 +284,5 @@ void bmp8_equalize(t_bmp8 * img, unsigned int * hist_eq) {
     for (int i=0; i < img->dataSize; i++) {
         img->data[i] = hist_eq[img->data[i]];
     }
+    free(hist_eq);
 }

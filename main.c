@@ -86,7 +86,6 @@ void bitmap_24_manipulation(float*** kernels, int filter_type) {
 
 int main(void) {
     float*** kernels = init_kernels();
-    char name[256] = {0};
     int choice = 0;
     int filter_type = 0;
 
@@ -96,27 +95,33 @@ int main(void) {
 
     printf("Please enter the name of the image you are interested in  (format => image_name.bmp):\n ");
 
-    char path[] = "..\\\\";
-    strcat(path,fgets(name, sizeof(name), stdin));
-    printf("%s\n", path);
-
-    size_t len = strlen(name);
-    if (len > 0 && name[len-1] == '\n') {
-        name[len-1] = '\0';
+    char path[7] = "..\\\\";
+    char name[256];
+    if (fgets(name, sizeof(name), stdin)){
+        size_t len = strlen(name);
+        if (len > 0 && name[len-1] == '\n') {
+            name[len-1] = '\0';
+        }
     }
+    strcat(path, name);
+
+
 
     t_bmp8 * img = bmp8_loadImage(path);
+    unsigned int bmp = 8;
+
 
     if (img == NULL) {
         bmp8_free(img);
         img = bmp24_loadImage(path);
+        bmp = ((t_bmp24*)img)->colorDepth;
         if (img == NULL) {
             printf("%s is neither bmp8 nor bmp24. It cannot be edited here.\n", name);
             free_kernels(kernels, 5, 3);
             return 1;
         }
     }
-    unsigned int bmp = ((t_bmp24*)img)->colorDepth;
+
 
     printf("Your image is in bmp%d. Here is what you can do:\n", bmp);
     printf("1: Print basic informations about the image\n");
@@ -150,7 +155,7 @@ int main(void) {
 
             (bmp == 8)? bmp8_applyFilter(img, kernels[filter_type], 3):
         bmp24_applyFilter(img, kernels[filter_type], 3);
-            (bmp == 8)? bmp8_saveImage(img, "../filtered_8.bmp"):
+            (bmp == 8)? bmp8_saveImage("../filtered_8.bmp", img):
         bmp24_saveImage(img, "../filtered_24.bmp");
             printf("Filtered image here \"../filtered_%d.bmp\"\n", bmp);
             break;
@@ -159,10 +164,10 @@ int main(void) {
                 unsigned int * hist = bmp8_computeHistogram(img);
                 unsigned int * hist_eq = bmp8_computeCDF(hist);
                 bmp8_equalize(img, hist_eq);
-                bmp8_saveImage(img, "../filtered_8.bmp");
+                bmp8_saveImage("../filtered_8.bmp",img);
             } else {
                 bmp24_equalize(img);
-                bmp8_saveImage(img, "../filtered_24.bmp");
+                bmp24_saveImage(img, "../filtered_24.bmp");
             }
             break;
 
