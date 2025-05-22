@@ -1,3 +1,12 @@
+/*
+**===============================================================
+**  File        : bmp8.c
+**  Author      : Giannini Loic and Benoît Tailhades
+**  Created on  : 04/2025
+**  Description : This file contains all the definitions of functions that aim to manage the filters and processing of gray scale  images
+**
+**===============================================================
+*/
 #include "bmp8.h"
 
 

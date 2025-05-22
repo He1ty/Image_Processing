@@ -1,11 +1,16 @@
+/*
+**===============================================================
+**  File        : bmp24.h
+**  Author      : Giannini Loic and Benoit Tailhades
+**  Created on  : 04/2025
+**  Description : This file contains the declaration of all functions used in the bmp8.c file
+**
+**===============================================================
+*/
+
 #ifndef BMP8_H
 #define BMP8_H
-
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdbool.h>
-#include <string.h>
-
 
 
 typedef struct {
