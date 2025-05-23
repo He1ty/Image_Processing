@@ -31,7 +31,6 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
     bmp8->colorDepth = *(short*)&bmp8->header[28];
 
     if (bmp8->colorDepth != 8) {
-        printf("error color plane (%d bits)\n", bmp8->colorDepth);
         fclose(file);
         return NULL;
     }

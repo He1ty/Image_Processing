@@ -3,8 +3,6 @@
 
 enum {BLUR, GAUSS, OUTLINE, EMBOSS, SHARPEN};
 
-
-
 float*** init_kernels() {
     float*** kernels = (float***)malloc(sizeof(float**) * 5);
 
@@ -105,17 +103,16 @@ int main(void) {
     }
     strcat(path, name);
 
-
-
-    t_bmp8 * img = bmp8_loadImage(path);
+    t_bmp8 * img8 = bmp8_loadImage(path);
     unsigned int bmp = 8;
+    t_bmp24 * img24 = NULL;
 
 
-    if (img == NULL) {
-        bmp8_free(img);
-        img = bmp24_loadImage(path);
-        bmp = ((t_bmp24*)img)->colorDepth;
-        if (img == NULL) {
+    if (img8 == NULL) {
+        free(img8);
+        img24 = bmp24_loadImage(path);
+        bmp = (img24)->colorDepth;
+        if (img24 == NULL) {
             printf("%s is neither bmp8 nor bmp24. It cannot be edited here.\n", name);
             free_kernels(kernels, 5, 3);
             return 1;
@@ -123,15 +120,15 @@ int main(void) {
     }
 
 
-    printf("Your image is in bmp%d. Here is what you can do:\n", bmp);
-    printf("1: Print basic informations about the image\n");
-    printf("2: Apply filters\n");
-    printf("3: Equalize Image\n");
-    printf("Enter your choice(1-3): ");
+    printf("Your image is in bmp%d. Here is what you can do:\n"
+           "1: Print basic informations about the image\n"
+           "2: Apply filters\n"
+           "3: Equalize Image\n"
+           "Enter your choice(1-3): ", bmp);
 
     if (scanf("%d", &choice) != 1) {
         printf("Invalid input\n");
-        (bmp == 8)? bmp8_free(img): bmp24_free(img);
+        (bmp == 8)? bmp8_free(img8): bmp24_free(img24);
         free_kernels(kernels, 5, 3);
         return 1;
     }
@@ -141,7 +138,7 @@ int main(void) {
 
     switch (choice) {
         case 1:
-            (bmp == 8)? bmp8_printInfo(img, 0):bmp24_printInfo(img);
+            (bmp == 8)? bmp8_printInfo(img8, 0):bmp24_printInfo(img24);
             break;
         case 2:
             printf("Choose a filter (0=BLUR, 1=GAUSS, 2=OUTLINE, 3=EMBOSS, 4=SHARPEN): ");
@@ -153,21 +150,21 @@ int main(void) {
                 filter_type = BLUR;
             }
 
-            (bmp == 8)? bmp8_applyFilter(img, kernels[filter_type], 3):
-        bmp24_applyFilter(img, kernels[filter_type], 3);
-            (bmp == 8)? bmp8_saveImage("../filtered_8.bmp", img):
-        bmp24_saveImage(img, "../filtered_24.bmp");
+            (bmp == 8)? bmp8_applyFilter(img8, kernels[filter_type], 3):
+        bmp24_applyFilter(img24, kernels[filter_type], 3);
+            (bmp == 8)? bmp8_saveImage("../filtered_8.bmp", img8):
+        bmp24_saveImage(img24, "../filtered_24.bmp");
             printf("Filtered image here \"../filtered_%d.bmp\"\n", bmp);
             break;
         case 3:
             if (bmp == 8) {
-                unsigned int * hist = bmp8_computeHistogram(img);
+                unsigned int * hist = bmp8_computeHistogram(img8);
                 unsigned int * hist_eq = bmp8_computeCDF(hist);
-                bmp8_equalize(img, hist_eq);
-                bmp8_saveImage("../filtered_8.bmp",img);
+                bmp8_equalize(img8, hist_eq);
+                bmp8_saveImage("../filtered_8.bmp",img8);
             } else {
-                bmp24_equalize(img);
-                bmp24_saveImage(img, "../filtered_24.bmp");
+                bmp24_equalize(img24);
+                bmp24_saveImage(img24, "../filtered_24.bmp");
             }
             break;
 
@@ -175,7 +172,7 @@ int main(void) {
             printf("Invalid choice bot\n");
     }
 
-    (bmp == 8)? bmp8_free(img): bmp24_free(img);
+    (bmp == 8)? bmp8_free(img8): bmp24_free(img24);
 
     // Libération de la mémoire
     free_kernels(kernels, 5, 3);
