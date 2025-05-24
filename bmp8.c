@@ -193,7 +193,7 @@ void bmp8_threshold(t_bmp8 * img, int threshold){
 
 }
 
-void bmp8_applyFilter(t_bmp8 * img, float ** kernel, int kernelSize){
+void bmp8_applyFilter(t_bmp8 * img, float ** kernel, int kernelSize{
     // takes as input an image of type bmp8(structure) a pointer to a pointer pointing to float and an int kernel size
     //First make sure that the kernel and image are valid. kernel must be odd
     //Then apply average based formulas for every pixel.

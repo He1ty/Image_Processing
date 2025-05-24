@@ -14,7 +14,8 @@
 
 
 t_pixel ** bmp24_allocateDataPixels (int width, int height) {
-
+// takes as input an int width and int heaight and return pixels
+    //just allocate memory to pixels. Hence the matric representation is in 2 dimension
     t_pixel ** pixels = (t_pixel**) malloc(height * sizeof(t_pixel*));
     for (int i = 0; i < height; i++) {
         pixels[i] = (t_pixel*) malloc(width * sizeof(t_pixel));
@@ -28,7 +29,8 @@ t_pixel ** bmp24_allocateDataPixels (int width, int height) {
     return pixels;
 }
 void bmp24_freeDataPixels (t_pixel ** pixels, int height) {
-
+// takes as input a pointer to a pointer of type t_pixel and an int height
+    // release the memory block pointed to by pixels
     for (int i = 0; i < height; i++) {
         free(pixels[i]);
     }
@@ -36,6 +38,8 @@ void bmp24_freeDataPixels (t_pixel ** pixels, int height) {
 
 }
 t_bmp24 * bmp24_allocate (int width, int height, int colorDepth) {
+    // takes as input an int width and an int height  and an int color depth
+    //allocate and fill with image information a structure bitmap
 
     t_bmp24* bitmap = (t_bmp24*) malloc(sizeof(t_bmp24));
 
@@ -53,21 +57,27 @@ t_bmp24 * bmp24_allocate (int width, int height, int colorDepth) {
 
 }
 void bmp24_free (t_bmp24 * img) {
+//takes as input an image of type t_bmp24(structure) and uses  bmp24_freeDataPixels to delete to free memory
 
     bmp24_freeDataPixels(img->data, img->height);
     free(img);
 
 }
 void file_rawRead (long position, void * buffer, uint32_t size, size_t n, FILE* file) {
+    // Takes as input  long position, void * buffer, uint32_t size, size_t n, FILE* file
+    // the aim of this function is to "read" a colored image
     fseek(file, position, SEEK_SET);
     fread(buffer, size, n, file);
 }
 void file_rawWrite (long position, void * buffer, uint32_t size, size_t n, FILE* file) {
+    // Takes as input  long position, void * buffer, uint32_t size, size_t n, FILE* file
+    // the aim of this function is to "read" a colored image
     fseek(file, position, SEEK_SET);
     fwrite(buffer, size, n, file);
 }
-void bmp24_readPixelValue (t_bmp24 * image, int x, int y, FILE * file)
-{
+void bmp24_readPixelValue (t_bmp24 * image, int x, int y, FILE * file){
+    // takes as input an pointer of type t_bmp24(structure) two ints x and y and the name of a file
+    //access to the data of the image and read it
     int rowSize = ((image->width * 3 + 3)/4)*4;
     uint32_t position = image->header.offset + (image->height - 1 - y) * rowSize + x * 3;
 
@@ -79,6 +89,8 @@ void bmp24_readPixelValue (t_bmp24 * image, int x, int y, FILE * file)
     image->data[y][x].red = pixelData[2];
 }
 void bmp24_readPixelData (t_bmp24 * image, FILE * file) {
+    // takes as input an pointer of type t_bmp24(structure) two ints x and y and the name of a file
+    //access to the data of the image and read it
     for (int j = 0; j < image->height; j++) {
         for (int i = 0; i < image->width; i++) {
             bmp24_readPixelValue(image, i, j, file);
@@ -87,6 +99,8 @@ void bmp24_readPixelData (t_bmp24 * image, FILE * file) {
 }
 
 void bmp24_writePixelValue (t_bmp24 * image, int x, int y, FILE * file) {
+    // takes as input an pointer of type t_bmp24(structure) two ints x and y and the name of a file
+    //access to the data of the image and write on  it
     int rowSize = ((image->width * 3 + 3)/4)*4;
     uint32_t position = image->header.offset + (image->height - 1 - y) * rowSize + x * 3;
 
@@ -99,6 +113,8 @@ void bmp24_writePixelValue (t_bmp24 * image, int x, int y, FILE * file) {
     file_rawWrite(position, pixelData, sizeof(uint8_t), 3, file);
 }
 void bmp24_writePixelData (t_bmp24 * image, FILE * file) {
+    // takes as input an pointer of type t_bmp24(structure) two ints x and y and the name of a file
+    //access to the data of the image and write on  it
     for (int j = 0; j < image->height; j++) {
         for (int i = 0; i < image->width; i++) {
             bmp24_writePixelValue(image, i, j, file);
@@ -106,6 +122,8 @@ void bmp24_writePixelData (t_bmp24 * image, FILE * file) {
     }
 }
 t_bmp24 * bmp24_loadImage (const char * filename) {
+    //takes a string of char as input name  and output
+    //header,width, height, color_depth, color table data size and data. All of those elements are stored in a bmp24 structure
     FILE * file = fopen(filename, "rb");
     if (!file) {
         printf("Error in opening file\n");
@@ -143,11 +161,12 @@ t_bmp24 * bmp24_loadImage (const char * filename) {
     bmp24_readPixelData(img, file);
     fclose(file);
     printf("Image successfully loaded!\n");
-
     return img;
 }
 
 void bmp24_saveImage (t_bmp24 * image, const char * filename) {
+    //Take as input and image of type bmp24(structure).
+    // Open a file in write mode then write all informations(well formated) contained in the structure
     FILE * file = fopen(filename, "wb");
     if (!file) {
         printf("Error in opening file\n");
@@ -165,6 +184,8 @@ void bmp24_saveImage (t_bmp24 * image, const char * filename) {
 
 }
 void bmp24_printInfo(t_bmp24 *img){
+    //takes as an input an image of type tbmp24 .
+    //print all datas contained in the structure
 
     printf("____________Image info:____________\n\n");
     printf("width = %d\n", img->width);
@@ -175,6 +196,9 @@ void bmp24_printInfo(t_bmp24 *img){
     printf("offset = %d\n", img->header.offset);
 }
 void bmp24_negative (t_bmp24 * img) {
+    //takes as an input an image of type tbmp24 .
+    //For every pixel contained in the image and inverse it's color which means black goes to white and vice versa
+    // For example black is 255. Hence we compute 255 - 255 which makes white = 0
     if(!img){
         printf("error pointer null\n");
         return;
@@ -190,6 +214,8 @@ void bmp24_negative (t_bmp24 * img) {
 
 }
 void bmp24_grayscale (t_bmp24 * img) {
+    //takes as an input an image of type tbmp24(structure)
+    //Turn the image in a gray scale one  by computing averages
     if(!img){
         printf("error pointer null\n");
         return;
@@ -206,6 +232,9 @@ void bmp24_grayscale (t_bmp24 * img) {
 
 }
 void bmp24_brightness (t_bmp24 * img, int value) {
+    // takes as input an image of type bmp24(structure) and a int value
+    //the aim is to add a certain value amount of brightness.
+    //to do so we add the value to each pixel's color. Of course if the value + the already existing color is over 255 then it remains 255
     if(!img){
         printf("error pointer null\n");
         return;
@@ -220,6 +249,7 @@ void bmp24_brightness (t_bmp24 * img, int value) {
     }
 }
 t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int kernelSize) {
+
     if(!img){
         printf("error pointer null\n");
         return;
@@ -273,6 +303,9 @@ t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int ker
     return newPixel;
 }
 void bmp24_applyFilter(t_bmp24 * img,float ** kernel, int kernelSize) {
+    // takes as input an image of type bmp24(structure) a pointer to a pointer pointing to float and an int kernel size
+    //First make sure that the kernel and image are valid. kernel must be odd
+    //Then apply average based formulas for every pixel.
 
     t_bmp24 * copy = (t_bmp24 *)malloc(sizeof(t_bmp24));
     copy->data = (t_pixel**)malloc(sizeof(t_pixel*) * img->height);
@@ -333,6 +366,9 @@ unsigned int * bmp24_computeCDF(unsigned int * hist) {
 }
 
 void bmp24_equalize(t_bmp24 * img) {
+    //takes as input a image.
+    //the aim is to equalize colors without changing them. hence we use YUV code to deal only with contrast
+    //It is useful to get an image closer to natural human vision
     unsigned int * hist = bmp24_computeHistogram(img);
     unsigned int * hist_eq = bmp24_computeCDF(hist);
     for (int y = 0; y < img->height; y++) {
