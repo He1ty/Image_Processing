@@ -142,7 +142,7 @@ t_bmp24 * bmp24_loadImage (const char * filename) {
 
     bmp24_readPixelData(img, file);
     fclose(file);
-    printf("image successfully loaded!\n");
+    printf("Image successfully loaded!\n");
 
     return img;
 }

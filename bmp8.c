@@ -16,7 +16,7 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
 
     FILE* file = fopen(filename, "rb");
     if (file == NULL) {
-        printf( "error opening file %s\n", filename);
+        printf( "Error opening file %s\n", filename);
         return NULL;
     }
     t_bmp8* bmp8 = (t_bmp8*)malloc(sizeof(t_bmp8));
@@ -42,7 +42,7 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
 
     bmp8->data = malloc(sizeof(unsigned char) * bmp8->dataSize);
     if (bmp8->data == NULL) {
-        printf("error allocating memory\n");
+        printf("Error allocating memory\n");
         fclose(file);
         return NULL;
     }
@@ -50,6 +50,8 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
     fread(bmp8->data, sizeof(unsigned char), bmp8->dataSize, file);
 
     fclose(file);
+    printf("Image successfully loaded!\n");
+
     return bmp8;
 }
 
