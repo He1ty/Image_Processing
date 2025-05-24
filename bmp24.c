@@ -108,7 +108,7 @@ void bmp24_writePixelData (t_bmp24 * image, FILE * file) {
 t_bmp24 * bmp24_loadImage (const char * filename) {
     FILE * file = fopen(filename, "rb");
     if (!file) {
-        printf("Error in opening file\n");
+        printf( "Error opening file %s in 24 bits !\n", filename);
         return NULL;
     }
     t_bmp_header header;

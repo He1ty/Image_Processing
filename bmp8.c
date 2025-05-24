@@ -17,7 +17,7 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
     //header,width, height, color_depth, color table data size and data. All of those elements are stored in a bmp8 structure
     FILE* file = fopen(filename, "rb");
     if (file == NULL) {
-        printf( "Error opening file %s\n", filename);
+        printf( "Error opening file %s in 8 bits !\n", filename);
         return NULL;
     }
     t_bmp8* bmp8 = (t_bmp8*)malloc(sizeof(t_bmp8));
