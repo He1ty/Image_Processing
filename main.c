@@ -1,5 +1,15 @@
+/*
+**===============================================================
+**  File        : main.c
+**  Author      : Giannini Loic and Benoît Tailhades
+**  Created on  : 04/2025
+**  Description : This file aim to gather all defined and declared function to make them work. This is why the final menu is defined here
+**
+**===============================================================
+*/
 #include "bmp8.h"
 #include "bmp24.h"
+#include <windows.h>
 
 enum {BLUR, GAUSS, OUTLINE, EMBOSS, SHARPEN};
 
