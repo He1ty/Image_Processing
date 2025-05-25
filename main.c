@@ -112,7 +112,7 @@ int main(void) {
     printf("==================================================================\n");
     printf("|                       BMP IMAGE EDITOR v1.0                    |\n");
     printf("|                                                                |\n");
-    printf("|            Created by Giannini Loic & Benoit Tailhades         |\n");
+    printf("|            Created by Giannini Loic & Tailhades Benoit         |\n");
     printf("|                                                                |\n");
     printf("|        Professional Image Processing Tool for BMP Files        |\n");
     printf("==================================================================\n");
