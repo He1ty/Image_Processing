@@ -112,7 +112,7 @@ int main(void) {
     printf("==================================================================\n");
     printf("|                       BMP IMAGE EDITOR v1.0                    |\n");
     printf("|                                                                |\n");
-    printf("|            Created by Giannini Loic & Benoît Tailhades         |\n");
+    printf("|            Created by Giannini Loic & Benoit Tailhades         |\n");
     printf("|                                                                |\n");
     printf("|        Professional Image Processing Tool for BMP Files        |\n");
     printf("==================================================================\n");
@@ -156,6 +156,7 @@ int main(void) {
         }
 
         while(show_choices_menu) {
+            bool valid_input = false;
             show_choices_menu = false;
             printf("\n");
             printf("===================================================================\n");
@@ -170,140 +171,144 @@ int main(void) {
             printf("  ---------------------------------------------------------------\n");
             printf("-> Enter your choice(1-4): ");
 
-            if (scanf("%d", &choice) != 1) {
-                printf(" Invalid input. Try again!\n");
-                show_choices_menu = true;
+            while (!valid_input) {
+                if (scanf("%d", &choice) != 1) {
+                    printf(" You entered an invalid input. Try Again\n-> ");
+                } else if (choice < 1 || choice > 4) {
+                    printf(" You entered an invalid input. Try Again\n-> ");
+                }
+                else {
+                    valid_input = true;
+                }
             }
 
             int c;
             while ((c = getchar()) != '\n' && c != EOF) {}
-            if (!show_choices_menu) {
-                switch (choice) {
+            switch (choice) {
 
-                case 1:
-                    printf("\n");
-                    printf("===================================================================\n");
-                    printf("|                        IMAGE INFORMATION                         |\n");
-                    printf("===================================================================\n");
-                    (bmp == 8)? bmp8_printInfo(img8, 0):bmp24_printInfo(img24);
-                    printf("\n Information displayed successfully!\n");
-                    printf("--------------------------------------------------------------------\n");
-                    printf("Press ENTER to continue...");
-                    getchar();
-                    show_choices_menu = true;
-                    break;
+            case 1:
+                printf("\n");
+                printf("===================================================================\n");
+                printf("|                        IMAGE INFORMATION                         |\n");
+                printf("===================================================================\n");
+                (bmp == 8)? bmp8_printInfo(img8, 0):bmp24_printInfo(img24);
+                printf("\n Information displayed successfully!\n");
+                printf("--------------------------------------------------------------------\n");
+                printf("Press ENTER to continue...");
+                getchar();
+                show_choices_menu = true;
+                break;
 
-                case 2:
-                    bool valid_input = false;
-                    printf("\n");
-                    printf("===================================================================\n");
-                    printf("|                         FILTER SELECTION                        |\n");
-                    printf("===================================================================\n");
-                    printf(" Choose a filter between the following:\n");
-                    printf("  - Convolution Filters -----------------------------------------\n");
-                    printf("  |  [0]  BLUR          [1]  GAUSS         [2]  OUTLINE          |\n");
-                    printf("  |  [3]  EMBOSS        [4]  SHARPEN                             |\n");
-                    printf("  ---------------------------------------------------------------\n");
-                    printf("  - Color Filters -----------------------------------------------\n");
-                    printf("  |  [5]  NEGATIVE      [6]   BRIGHTNESS                        |\n");
-                    (bmp == 8)?
-                    printf("  |  [7]  THRESHOLD                                             |\n"):
-                    printf("  |  [7]  BLACK AND WHITE                                       |\n");
-                    printf("  ---------------------------------------------------------------\n");
-                    printf("  - Navigation --------------------------------------------------\n");
-                    printf("  |  [8]   GO BACK                                               |\n");
-                    printf("  ---------------------------------------------------------------\n");
-                    printf("-> Enter filter number (0-8): ");
+            case 2:
+                bool valid_input = false;
+                printf("\n");
+                printf("===================================================================\n");
+                printf("|                         FILTER SELECTION                        |\n");
+                printf("===================================================================\n");
+                printf(" Choose a filter between the following:\n");
+                printf("  - Convolution Filters -----------------------------------------\n");
+                printf("  |  [0]  BLUR          [1]  GAUSS         [2]  OUTLINE          |\n");
+                printf("  |  [3]  EMBOSS        [4]  SHARPEN                             |\n");
+                printf("  ---------------------------------------------------------------\n");
+                printf("  - Color Filters -----------------------------------------------\n");
+                printf("  |  [5]  NEGATIVE      [6]   BRIGHTNESS                        |\n");
+                (bmp == 8)?
+                printf("  |  [7]  THRESHOLD                                             |\n"):
+                printf("  |  [7]  BLACK AND WHITE                                       |\n");
+                printf("  ---------------------------------------------------------------\n");
+                printf("  - Navigation --------------------------------------------------\n");
+                printf("  |  [8]   GO BACK                                               |\n");
+                printf("  ---------------------------------------------------------------\n");
+                printf("-> Enter number (0-8): ");
 
-                    while (!valid_input) {
-                        if (scanf("%d", &filter_type) != 1) {
-                            printf(" You entered an invalid input. Try Again\n-> ");
-                        } else if (filter_type < 0 || filter_type > 8) {
-                            printf(" You entered an invalid input. Try Again\n-> ");
-                        } else {
-                            valid_input = true;
-                        }
-                    }
-
-                    if (filter_type == 5) {
-                        printf("\n Applying NEGATIVE filter...\n");
-                        (bmp == 8)? bmp8_negative(img8):
-                        bmp24_negative(img24);
-                        printf(" NEGATIVE filter applied successfully!\n");
-                    } else if (filter_type == 6) {
-                        int brightness;
-                        printf("\n Enter the brightness value: ");
-                        scanf("%d", &brightness);
-                        printf(" Applying BRIGHTNESS filter...\n");
-                        (bmp == 8)? bmp8_brightness(img8, brightness):
-                        bmp24_brightness(img24, brightness);
-                        printf(" BRIGHTNESS filter applied successfully!\n");
-                    } else if (filter_type == 7) {
-                        if (bmp == 8) {
-                            int threshold;
-                            printf("\n Enter the threshold value: ");
-                            scanf("%d", &threshold);
-                            printf(" Applying THRESHOLD filter...\n");
-                            bmp8_threshold(img8, threshold);
-                            printf(" THRESHOLD filter applied successfully!\n");
-                        } else if (bmp == 24) {
-                            printf("\n Applying BLACK AND WHITE filter...\n");
-                            bmp24_grayscale(img24);
-                            printf(" BLACK AND WHITE filter applied successfully!\n");
-                        }
-                    } else if (filter_type == 8) {
-                        show_choices_menu = true;
-                        break;
+                while (!valid_input) {
+                    if (scanf("%d", &filter_type) != 1) {
+                        printf(" You entered an invalid input. Try Again\n-> ");
+                    } else if (filter_type < 0 || filter_type > 8) {
+                        printf(" You entered an invalid input. Try Again\n-> ");
                     } else {
-                        const char* filter_names[] = {"BLUR", "GAUSS", "OUTLINE", "EMBOSS", "SHARPEN"};
-                        printf("\n Applying %s filter...\n", filter_names[filter_type]);
-                        (bmp == 8)? bmp8_applyFilter(img8, kernels[filter_type], 3):
-                        bmp24_applyFilter(img24, kernels[filter_type], 3);
-                        printf(" %s filter applied successfully!\n", filter_names[filter_type]);
+                        valid_input = true;
                     }
-
-                    if (filter_type != 8) {
-                        save(img8, img24, path, bmp);
-                        show_choices_menu = true;
-                    }
-                    break;
-
-                case 3:
-                    printf("\n");
-                    printf("===================================================================\n");
-                    printf("|                       IMAGE EQUALIZATION                         |\n");
-                    printf("===================================================================\n");
-                    printf(" Processing image equalization...\n");
-
-                    if (bmp == 8) {
-                        unsigned int * hist = bmp8_computeHistogram(img8);
-                        unsigned int * hist_eq = bmp8_computeCDF(hist);
-                        bmp8_equalize(img8, hist_eq);
-                        save(img8, img24, path, bmp);
-                    } else {
-                        bmp24_equalize(img24);
-                        save(img8, img24, path, bmp);
-                    }
-                    printf("✅ Image equalization completed successfully!\n");
-                    show_choices_menu = true;
-                    break;
-
-                case 4:
-                    printf("\n");
-                    printf("===================================================================\n");
-                    printf("|                           GOODBYE!                               |\n");
-                    printf("===================================================================\n");
-                    printf(" Thank you for using BMP Image Editor!\n");
-                    printf(" Your images have been processed successfully.\n");
-                    (bmp == 8)? bmp8_free(img8): bmp24_free(img24);
-                    free_kernels(kernels, 5, 3);
-                    return 1;
-
-                default:
-                    printf(" Invalid choice bot\n");
-                    show_choices_menu = true;
                 }
+
+                if (filter_type == 5) {
+                    printf("\nApplying NEGATIVE filter...\n");
+                    (bmp == 8)? bmp8_negative(img8):
+                    bmp24_negative(img24);
+                    printf("NEGATIVE filter applied successfully!\n");
+                } else if (filter_type == 6) {
+                    int brightness;
+                    printf("\nEnter the brightness value: ");
+                    scanf("%d", &brightness);
+                    printf("Applying BRIGHTNESS filter...\n");
+                    (bmp == 8)? bmp8_brightness(img8, brightness):
+                    bmp24_brightness(img24, brightness);
+                    printf("BRIGHTNESS filter applied successfully!\n");
+                } else if (filter_type == 7) {
+                    if (bmp == 8) {
+                        int threshold;
+                        printf("\n Enter the threshold value: ");
+                        scanf("%d", &threshold);
+                        printf(" Applying THRESHOLD filter...\n");
+                        bmp8_threshold(img8, threshold);
+                        printf(" THRESHOLD filter applied successfully!\n");
+                    } else if (bmp == 24) {
+                        printf("\n Applying BLACK AND WHITE filter...\n");
+                        bmp24_grayscale(img24);
+                        printf(" BLACK AND WHITE filter applied successfully!\n");
+                    }
+                } else if (filter_type == 8) {
+                    show_choices_menu = true;
+                    break;
+                } else {
+                    const char* filter_names[] = {"BLUR", "GAUSS", "OUTLINE", "EMBOSS", "SHARPEN"};
+                    printf("\n Applying %s filter...\n", filter_names[filter_type]);
+                    (bmp == 8)? bmp8_applyFilter(img8, kernels[filter_type], 3):
+                    bmp24_applyFilter(img24, kernels[filter_type], 3);
+                    printf(" %s filter applied successfully!\n", filter_names[filter_type]);
+                }
+
+                if (filter_type != 8) {
+                    save(img8, img24, path, bmp);
+                }
+                break;
+
+            case 3:
+                printf("\n");
+                printf("===================================================================\n");
+                printf("|                       IMAGE EQUALIZATION                         |\n");
+                printf("===================================================================\n");
+                printf(" Processing image equalization...\n");
+
+                if (bmp == 8) {
+                    unsigned int * hist = bmp8_computeHistogram(img8);
+                    unsigned int * hist_eq = bmp8_computeCDF(hist);
+                    bmp8_equalize(img8, hist_eq);
+                    save(img8, img24, path, bmp);
+                } else {
+                    bmp24_equalize(img24);
+                    save(img8, img24, path, bmp);
+                }
+                printf(" Image equalization completed successfully!\n");
+                show_choices_menu = true;
+                break;
+
+            case 4:
+                printf("\n");
+                printf("===================================================================\n");
+                printf("|                           GOODBYE!                               |\n");
+                printf("===================================================================\n");
+                printf(" Thank you for using BMP Image Editor!\n");
+                printf(" Your images have been processed successfully.\n");
+                (bmp == 8)? bmp8_free(img8): bmp24_free(img24);
+                free_kernels(kernels, 5, 3);
+                return 0;
+
+            default:
+                printf(" Invalid choice bot\n");
+                show_choices_menu = true;
             }
+
         }
 
         int answer;
