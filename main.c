@@ -67,7 +67,8 @@ void free_kernels(float*** kernels, int num_kernels, int kernel_size) {
 
 void save(t_bmp8 * img8, t_bmp24 * img24, char * path, unsigned int bmp) {
     int answer;
-    char pre[7] = "..\\\\";
+    char pre[512];
+    strcpy(pre, "..\\\\");
 
     printf("\n==================================================================\n");
     printf("|                            SAVE OPTIONS                          |\n");
@@ -80,7 +81,7 @@ void save(t_bmp8 * img8, t_bmp24 * img24, char * path, unsigned int bmp) {
     printf("-> Enter your choice: ");
     scanf("%d", &answer);
 
-    char save_name[256] = {0};
+    char save_name[256];
     if (answer == 1) {
         printf("\n Save as (format: name.bmp):\n");
         printf("-> ");
@@ -93,7 +94,7 @@ void save(t_bmp8 * img8, t_bmp24 * img24, char * path, unsigned int bmp) {
         }
         strcat(pre, save_name);
     } else if (answer == 2) {
-        strcpy(save_name, path);
+        strcpy(pre, path);
     }
     (bmp == 8)? bmp8_saveImage(pre, img8):
     bmp24_saveImage(img24, pre);
@@ -104,7 +105,6 @@ int main(void) {
     float*** kernels = init_kernels();
     int choice = 0;
     int filter_type = 0;
-    bool right_name = false;
     bool show_choices_menu = true;
 
     // Enhanced Welcome Screen
@@ -128,7 +128,8 @@ int main(void) {
         printf(" Please enter the name of the image you are interested in (format => image_name.bmp):\n");
         printf("-> ");
 
-        char path[7] = "..\\\\";
+        char path[512];
+        strcpy(path, "..\\\\");
         char name[256];
         fflush(stdin);
         if (fgets(name, sizeof(name), stdin)){
@@ -260,6 +261,7 @@ int main(void) {
                 } else if (filter_type == 8) {
                     show_choices_menu = true;
                     break;
+
                 } else {
                     const char* filter_names[] = {"BLUR", "GAUSS", "OUTLINE", "EMBOSS", "SHARPEN"};
                     printf("\n Applying %s filter...\n", filter_names[filter_type]);
@@ -290,7 +292,6 @@ int main(void) {
                     save(img8, img24, path, bmp);
                 }
                 printf(" Image equalization completed successfully!\n");
-                show_choices_menu = true;
                 break;
 
             case 4:
@@ -308,7 +309,6 @@ int main(void) {
                 printf(" Invalid choice bot\n");
                 show_choices_menu = true;
             }
-
         }
 
         int answer;
